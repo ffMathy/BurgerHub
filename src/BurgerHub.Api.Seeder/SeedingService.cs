@@ -54,18 +54,39 @@ public class SeedingService : ISeedingService
     {
         var userFaker = _fakerFactory.CreateUserFaker();
 
-        for (var i = 0; i < _seedingOptions.Value.AmountOfUsers; i++)
-        {
-            var user = userFaker.Generate();
-            await _userCollection.InsertOneAsync(user);
-        }
+        var users = userFaker.Generate(_seedingOptions.Value.AmountOfUsers);
+        await _userCollection.InsertManyAsync(users);
+
+        await Task.WhenAll(
+            Task.WhenAll(users.Select(SeedPhotosForUserAsync)),
+            Task.WhenAll(users.Select(SeedReviewsForUserAsync)));
+    }
+
+    private async Task SeedPhotosForUserAsync(User user)
+    {
+        var photoFaker = _fakerFactory.CreatePhotoFaker();
+        
+        var photos = photoFaker.Generate(_seedingOptions.Value.AmountOfPhotosPerUser);
+        photos.ForEach(p => p.AuthorUserId = user.Id);
+
+        await _photoCollection.InsertManyAsync(photos);
+    }
+
+    private async Task SeedReviewsForUserAsync(User user)
+    {
+        var reviewFaker = _fakerFactory.CreateReviewFaker();
+        
+        var reviews = reviewFaker.Generate(_seedingOptions.Value.AmountOfReviewsPerUser);
+        reviews.ForEach(p => p.AuthorUserId = user.Id);
+
+        await _reviewCollection.InsertManyAsync(reviews);
     }
 
     private async Task SeedRestaurantsAsync()
     {
         var restaurantFaker = _fakerFactory.CreateRestaurantFaker();
 
-        for (var i = 0; i < _seedingOptions.Value.AmountOfUsers; i++)
+        for (var i = 0; i < _seedingOptions.Value.AmountOfRestaurants; i++)
         {
             var restaurant = restaurantFaker.Generate();
             await _restaurantCollection.InsertOneAsync(restaurant);

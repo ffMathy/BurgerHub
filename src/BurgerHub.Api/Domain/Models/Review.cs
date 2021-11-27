@@ -3,8 +3,10 @@
 namespace BurgerHub.Api.Domain.Models;
 
 public record Review(
-    ObjectId AuthorUserId,
-    ReviewScores Scores);
+    ReviewScores Scores)
+{
+    public ObjectId AuthorUserId { get; set; }
+};
 
 public record ReviewScores
 {
