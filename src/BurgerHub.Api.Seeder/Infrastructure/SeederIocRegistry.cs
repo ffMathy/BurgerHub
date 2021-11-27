@@ -1,7 +1,7 @@
 ﻿using BurgerHub.Api.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BurgerHub.Api.Seeder;
+namespace BurgerHub.Api.Seeder.Infrastructure;
 
 public class SeederIocRegistry
 {

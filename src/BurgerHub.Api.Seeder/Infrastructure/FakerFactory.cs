@@ -3,14 +3,14 @@ using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Infrastructure.Encryption;
 using MongoDB.Bson;
 
-namespace BurgerHub.Api.Seeder;
+namespace BurgerHub.Api.Seeder.Infrastructure;
 
 public interface IFakerFactory
 {
     Faker<User> CreateUserFaker();
     Faker<Review> CreateReviewFaker();
     Faker<Photo> CreatePhotoFaker();
-    Faker<Photo> CreateRestaurantFaker();
+    Faker<Restaurant> CreateRestaurantFaker();
 }
 
 public class FakerFactory : IFakerFactory
@@ -58,7 +58,7 @@ public class FakerFactory : IFakerFactory
         throw new NotImplementedException();
     }
 
-    public Faker<Photo> CreateRestaurantFaker()
+    public Faker<Restaurant> CreateRestaurantFaker()
     {
         throw new NotImplementedException();
     }

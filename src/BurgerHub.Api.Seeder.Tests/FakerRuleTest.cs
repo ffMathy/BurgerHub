@@ -1,5 +1,6 @@
 using System;
 using BurgerHub.Api.Infrastructure;
+using BurgerHub.Api.Seeder.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
