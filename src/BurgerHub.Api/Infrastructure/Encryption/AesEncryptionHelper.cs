@@ -47,7 +47,7 @@ public class AesEncryptionHelper : IAesEncryptionHelper
 
         using var aes = GetAesAlgorithm(key);
         aes.IV = withoutSalt ?
-            Array.Empty<byte>() :
+            new byte[aes.BlockSize / 8] :
             GenerateRandomInitializationVector(key);
 
         using var encryptor = aes.CreateEncryptor(
