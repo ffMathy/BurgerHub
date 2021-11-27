@@ -19,6 +19,12 @@ public class ApiIocRegistry
     {
         RegisterOptions();
         RegisterMongo();
+        RegisterEncryption();
+    }
+
+    private void RegisterEncryption()
+    {
+        _serviceCollection.AddScoped<IAesEncryptionHelper, AesEncryptionHelper>();
     }
 
     private void RegisterOptions()
