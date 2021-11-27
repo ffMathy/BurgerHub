@@ -8,11 +8,14 @@ namespace BurgerHub.Api.Infrastructure;
 public class ApiIocRegistry
 {
     private readonly IServiceCollection _serviceCollection;
+    private readonly IConfiguration _configuration;
 
     public ApiIocRegistry(
-        IServiceCollection serviceCollection)
+        IServiceCollection serviceCollection,
+        IConfiguration configuration)
     {
         _serviceCollection = serviceCollection;
+        _configuration = configuration;
     }
 
     public void Register()
@@ -29,20 +32,25 @@ public class ApiIocRegistry
 
     private void RegisterOptions()
     {
-        _serviceCollection.AddOptions<MongoOptions>("Mongo");
-        _serviceCollection.AddOptions<EncryptionOptions>("Encryption");
+        void Configure<TOptions>(string name) where TOptions : class
+        {
+            _serviceCollection.Configure<TOptions>(
+                _configuration.GetSection(name));
+        }
+        
+        _serviceCollection.AddOptions();
+        
+        Configure<MongoOptions>("Mongo");
+        Configure<EncryptionOptions>("Encryption");
     }
 
     private void RegisterMongo()
     {
         _serviceCollection.AddScoped<IMongoDatabase>(provider =>
         {
-            var options = provider.GetService<IOptions<MongoOptions>>();
-            var connectionString =
-                options?.Value.ConnectionString ??
-                throw new InvalidOperationException("Mongo connection string not found.");
+            var options = provider.GetRequiredService<IOptions<MongoOptions>>();
             
-            var client = new MongoClient(connectionString);
+            var client = new MongoClient(options.Value.ConnectionString);
             return client.GetDatabase(options.Value.DatabaseName);
         });
         

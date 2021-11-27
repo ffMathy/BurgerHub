@@ -1,14 +1,23 @@
 ﻿using Bogus;
-using BurgerHub.Api.Infrastructure;
 using BurgerHub.Api.Seeder;
+using BurgerHub.Api.Seeder.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 Randomizer.Seed = new Random(1337);
 
-var serviceCollection = new ServiceCollection();
-serviceCollection.AddTransient<ISeedingService, SeedingService>();
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .AddJsonFile("appsettings.Development.json")
+    .AddEnvironmentVariables()
+    .Build();
 
-var registry = new ApiIocRegistry(serviceCollection);
+var serviceCollection = new ServiceCollection();
+
+var registry = new SeederIocRegistry(
+    serviceCollection,
+    configuration);
 registry.Register();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();

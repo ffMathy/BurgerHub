@@ -6,7 +6,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var registry = new ApiIocRegistry(builder.Services);
+var registry = new ApiIocRegistry(
+    builder.Services,
+    builder.Configuration);
 registry.Register();
 
 var app = builder.Build();

@@ -1,6 +1,5 @@
-using System;
-using BurgerHub.Api.Infrastructure;
 using BurgerHub.Api.Seeder.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,7 +14,9 @@ public class FakerRuleTest
     {
         var serviceCollection = new ServiceCollection();
 
-        var registry = new SeederIocRegistry(serviceCollection);
+        var registry = new SeederIocRegistry(
+            serviceCollection,
+            new ConfigurationBuilder().Build());
         registry.Register();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();

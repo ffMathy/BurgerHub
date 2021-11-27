@@ -1,9 +1,7 @@
-﻿using Bogus;
-using BurgerHub.Api.Domain.Models;
+﻿using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Infrastructure.Encryption;
 using BurgerHub.Api.Seeder.Infrastructure;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BurgerHub.Api.Seeder;
@@ -15,7 +13,6 @@ public interface ISeedingService
 
 public class SeedingService : ISeedingService
 {
-    private readonly IEncryptionHelper _encryptionHelper;
     private readonly IFakerFactory _fakerFactory;
     
     private readonly IOptions<SeedingOptions> _seedingOptions;
@@ -26,7 +23,6 @@ public class SeedingService : ISeedingService
     private readonly IMongoCollection<Photo> _photoCollection;
 
     public SeedingService(
-        IEncryptionHelper encryptionHelper,
         IFakerFactory fakerFactory,
         IOptions<SeedingOptions> seedingOptions,
         IMongoCollection<User> userCollection,
@@ -34,7 +30,6 @@ public class SeedingService : ISeedingService
         IMongoCollection<Restaurant> restaurantCollection,
         IMongoCollection<Photo> photoCollection)
     {
-        _encryptionHelper = encryptionHelper;
         _fakerFactory = fakerFactory;
         _seedingOptions = seedingOptions;
         _userCollection = userCollection;
