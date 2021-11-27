@@ -12,4 +12,14 @@
       <ProjectReference Include="..\BurgerHub.Api\BurgerHub.Api.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\BurgerHub.Api\appsettings.Development.json">
+        <Link>appsettings.Development.json</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Bogus" Version="34.0.1" />
+    </ItemGroup>
+
 </Project>

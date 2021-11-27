@@ -5,11 +5,11 @@ using MongoDB.Driver;
 
 namespace BurgerHub.Api.Infrastructure;
 
-public class IocRegistry
+public class ApiIocRegistry
 {
     private readonly IServiceCollection _serviceCollection;
 
-    public IocRegistry(
+    public ApiIocRegistry(
         IServiceCollection serviceCollection)
     {
         _serviceCollection = serviceCollection;
