@@ -2,6 +2,17 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurgerHub.Api", "BurgerHub.Api\BurgerHub.Api.csproj", "{EECD77ED-C67C-490D-B4F1-F7FB7ADEEBC4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{1B3191DC-8E75-498A-854F-29D8734A1F9E}"
+ProjectSection(SolutionItems) = preProject
+	..\docker-compose.dependencies.yml = ..\docker-compose.dependencies.yml
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{C39FC46C-8A71-4F12-89B4-A9A23BC3294B}"
+ProjectSection(SolutionItems) = preProject
+	..\scripts\start-dependencies.bat = ..\scripts\start-dependencies.bat
+	..\scripts\start-dependencies.sh = ..\scripts\start-dependencies.sh
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
