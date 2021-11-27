@@ -16,7 +16,9 @@ public class FakerRuleTest
 
         var registry = new SeederIocRegistry(
             serviceCollection,
-            new ConfigurationBuilder().Build());
+            new ConfigurationBuilder()
+                .AddJsonFile("appsettings.Development.json")
+                .Build());
         registry.Register();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -29,8 +31,12 @@ public class FakerRuleTest
         //Arrange
         var faker = _fakerFactory.CreateUserFaker();
         
-        //Act & Assert
+        //Act
+        var user = faker.Generate();
+        
+        //Assert
         faker.AssertConfigurationIsValid();
+        Assert.IsNotNull(user);
     }
     
     [TestMethod]
@@ -39,8 +45,12 @@ public class FakerRuleTest
         //Arrange
         var faker = _fakerFactory.CreatePhotoFaker();
         
-        //Act & Assert
+        //Act
+        var photo = faker.Generate();
+        
+        //Assert
         faker.AssertConfigurationIsValid();
+        Assert.IsNotNull(photo);
     }
     
     [TestMethod]
@@ -49,8 +59,12 @@ public class FakerRuleTest
         //Arrange
         var faker = _fakerFactory.CreateRestaurantFaker();
         
-        //Act & Assert
+        //Act
+        var restaurant = faker.Generate();
+        
+        //Assert
         faker.AssertConfigurationIsValid();
+        Assert.IsNotNull(restaurant);
     }
     
     [TestMethod]
@@ -59,7 +73,11 @@ public class FakerRuleTest
         //Arrange
         var faker = _fakerFactory.CreateReviewFaker();
         
-        //Act & Assert
+        //Act
+        var review = faker.Generate();
+        
+        //Assert
         faker.AssertConfigurationIsValid();
+        Assert.IsNotNull(review);
     }
 }

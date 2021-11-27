@@ -2,7 +2,9 @@
 
 namespace BurgerHub.Api.Domain.Models;
 
-public record User(
-    ObjectId Id,
-    byte[] EncryptedEmail,
-    byte[] HashedPassword);
+public class User
+{
+    public ObjectId Id { get; set; }
+    public byte[] EncryptedEmail { get; set; } = null!;
+    public byte[] HashedPassword { get; set; } = null!;
+}

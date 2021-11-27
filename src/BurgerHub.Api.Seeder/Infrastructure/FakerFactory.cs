@@ -96,14 +96,15 @@ public class FakerFactory : IFakerFactory
                 x => x.OpeningTimes,
                 x => x.Random.ArrayElements(x.Random
                     .EnumValues<DayOfWeek>()
-                    .Select(dayOfWeek => new OpeningTime(
-                        dayOfWeek,
-                        OpenTimeUtc: x.Date.BetweenTimeOnly(
+                    .Select(dayOfWeek => new OpeningTime() {
+                        DayOfWeek = dayOfWeek,
+                        OpenTimeUtc = x.Date.BetweenTimeOnly(
                             new TimeOnly(8, 0),
                             new TimeOnly(11, 0)),
-                        CloseTimeUtc: x.Date.BetweenTimeOnly(
+                        CloseTimeUtc = x.Date.BetweenTimeOnly(
                             new TimeOnly(16, 0),
-                            new TimeOnly(21, 0))))
+                            new TimeOnly(21, 0))
+                    })
                     .ToArray()));
     }
 }

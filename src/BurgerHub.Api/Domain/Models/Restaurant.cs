@@ -2,12 +2,16 @@
 
 namespace BurgerHub.Api.Domain.Models;
 
-public record Restaurant(
-    string Name,
-    GeoJsonPoint<GeoJson2DGeographicCoordinates> Location,
-    OpeningTime[] OpeningTimes);
+public class Restaurant
+{
+    public string Name { get; set; } = null!;
+    public GeoJsonPoint<GeoJson2DGeographicCoordinates> Location { get; set; } = null!;
+    public OpeningTime[] OpeningTimes { get; set; } = null!;
+}
 
-public record OpeningTime(
-    DayOfWeek DayOfWeek,
-    TimeOnly OpenTimeUtc,
-    TimeOnly CloseTimeUtc);
+public class OpeningTime
+{
+    public DayOfWeek DayOfWeek { get; set; }
+    public TimeOnly OpenTimeUtc { get; set; }
+    public TimeOnly CloseTimeUtc { get; set; }
+}

@@ -18,4 +18,11 @@
       <ProjectReference Include="..\BurgerHub.Api.Seeder\BurgerHub.Api.Seeder.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\BurgerHub.Api\appsettings.Development.json">
+        <Link>appsettings.Development.json</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

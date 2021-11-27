@@ -2,9 +2,9 @@
 
 namespace BurgerHub.Api.Domain.Models;
 
-public record Photo(
-    ObjectId Id,
-    string Url)
+public class Photo
 {
     public ObjectId AuthorUserId { get; set; }
+    public ObjectId Id { get; set; }
+    public string Url { get; set; } = null!;
 };
