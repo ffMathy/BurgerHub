@@ -15,12 +15,12 @@ public interface IFakerFactory
 
 public class FakerFactory : IFakerFactory
 {
-    private readonly IAesEncryptionHelper _aesEncryptionHelper;
+    private readonly IEncryptionHelper _encryptionHelper;
 
     public FakerFactory(
-        IAesEncryptionHelper aesEncryptionHelper)
+        IEncryptionHelper encryptionHelper)
     {
-        _aesEncryptionHelper = aesEncryptionHelper;
+        _encryptionHelper = encryptionHelper;
     }
     
     public Faker<User> CreateUserFaker()
@@ -32,20 +32,17 @@ public class FakerFactory : IFakerFactory
                 ObjectId.GenerateNewId)
             .RuleFor(
                 x => x.EncryptedEmail,
-                x => _aesEncryptionHelper
+                x => _encryptionHelper
                     .EncryptAsync(
                         x.Person.Email,
                         withoutSalt: true)
                     .Result)
             .RuleFor(
                 x => x.HashedPassword,
-                x => _aesEncryptionHelper
-                    .EncryptAsync(
-                        x.Internet.Password(
-                            length: 10,
-                            memorable: true),
-                        withoutSalt: true)
-                    .Result);
+                x => _encryptionHelper
+                    .Hash(x.Internet.Password(
+                        length: 10,
+                        memorable: true)));
     }
 
     public Faker<Review> CreateReviewFaker()

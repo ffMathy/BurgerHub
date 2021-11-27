@@ -1,42 +1,21 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Options;
 
 namespace BurgerHub.Api.Infrastructure.Encryption;
 
-public class AesEncryptionHelper : IAesEncryptionHelper
+public class EncryptionHelper : IEncryptionHelper
 {
     private readonly IOptionsMonitor<EncryptionOptions> _encryptionOptionsMonitor;
 
-    public AesEncryptionHelper(
+    private const int KeySize = 256;
+    private const int BlockSize = 128;
+
+    public EncryptionHelper(
         IOptionsMonitor<EncryptionOptions> encryptionOptionsMonitor)
     {
         _encryptionOptionsMonitor = encryptionOptionsMonitor;
-    }
-
-    private static byte[] GenerateRandomInitializationVector(string key)
-    {
-        var aes = GetAesAlgorithm(key);
-        aes.GenerateIV();
-
-        return aes.IV;
-    }
-
-    private static Aes GetAesAlgorithm(string key)
-    {
-        var aes = Aes.Create();
-        aes.Mode = CipherMode.CBC;
-        aes.Padding = PaddingMode.PKCS7;
-        aes.KeySize = 256;
-        aes.BlockSize = 128;
-        aes.Key = GetKeyBytesFromString(key);
-
-        return aes;
-    }
-
-    private static byte[] GetKeyBytesFromString(string key)
-    {
-        return Encoding.UTF8.GetBytes(key);
     }
 
     public async Task<byte[]> EncryptAsync(string plainText, bool withoutSalt = false)
@@ -47,7 +26,7 @@ public class AesEncryptionHelper : IAesEncryptionHelper
 
         using var aes = GetAesAlgorithm(key);
         aes.IV = withoutSalt ?
-            new byte[aes.BlockSize / 8] :
+            GetEmptyInitializationVector(aes) :
             GenerateRandomInitializationVector(key);
 
         using var encryptor = aes.CreateEncryptor(
@@ -65,6 +44,21 @@ public class AesEncryptionHelper : IAesEncryptionHelper
 
         var encrypted = memoryStream.ToArray();
         return encrypted;
+    }
+
+    public byte[] Hash(string plainText)
+    {
+        var key = _encryptionOptionsMonitor.CurrentValue.Pepper;
+        if (key == null)
+            throw new InvalidOperationException("Could not find a pepper in the configuration of the application.");
+        
+        var salt = RandomNumberGenerator.GetBytes(BlockSize);
+        return KeyDerivation.Pbkdf2(
+            plainText + key,
+            salt,
+            KeyDerivationPrf.HMACSHA512,
+            iterationCount: 100000,
+            numBytesRequested: KeySize / 8);
     }
 
     public async Task<string> DecryptAsync(byte[] cipherText)
@@ -88,6 +82,36 @@ public class AesEncryptionHelper : IAesEncryptionHelper
         var text = await streamReader.ReadToEndAsync();
 
         return text;
+    }
+
+    private static byte[] GetEmptyInitializationVector(Aes aes)
+    {
+        return new byte[aes.BlockSize / 8];
+    }
+
+    private static byte[] GenerateRandomInitializationVector(string key)
+    {
+        var aes = GetAesAlgorithm(key);
+        aes.GenerateIV();
+
+        return aes.IV;
+    }
+
+    private static Aes GetAesAlgorithm(string key)
+    {
+        var aes = Aes.Create();
+        aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
+        aes.KeySize = KeySize;
+        aes.BlockSize = 128;
+        aes.Key = GetKeyBytesFromString(key);
+
+        return aes;
+    }
+
+    private static byte[] GetKeyBytesFromString(string key)
+    {
+        return Encoding.UTF8.GetBytes(key);
     }
 
     private static byte[] ExtractDataBytesFromCipherText(byte[] cipherText)

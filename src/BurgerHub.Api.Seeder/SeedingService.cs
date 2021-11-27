@@ -15,7 +15,7 @@ public interface ISeedingService
 
 public class SeedingService : ISeedingService
 {
-    private readonly IAesEncryptionHelper _aesEncryptionHelper;
+    private readonly IEncryptionHelper _encryptionHelper;
     private readonly IFakerFactory _fakerFactory;
     
     private readonly IOptions<SeedingOptions> _seedingOptions;
@@ -26,7 +26,7 @@ public class SeedingService : ISeedingService
     private readonly IMongoCollection<Photo> _photoCollection;
 
     public SeedingService(
-        IAesEncryptionHelper aesEncryptionHelper,
+        IEncryptionHelper encryptionHelper,
         IFakerFactory fakerFactory,
         IOptions<SeedingOptions> seedingOptions,
         IMongoCollection<User> userCollection,
@@ -34,7 +34,7 @@ public class SeedingService : ISeedingService
         IMongoCollection<Restaurant> restaurantCollection,
         IMongoCollection<Photo> photoCollection)
     {
-        _aesEncryptionHelper = aesEncryptionHelper;
+        _encryptionHelper = encryptionHelper;
         _fakerFactory = fakerFactory;
         _seedingOptions = seedingOptions;
         _userCollection = userCollection;

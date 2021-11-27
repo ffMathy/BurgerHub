@@ -24,7 +24,7 @@ public class AesEncryptionHelperTest
                 Pepper = "VQpYmtjVlH$Ys#llTcP9fwPCkzTxs1%f"
             });
 
-        var aesEncryptionHelper = new AesEncryptionHelper(fakeEncryptionOptionsMonitor);
+        var aesEncryptionHelper = new EncryptionHelper(fakeEncryptionOptionsMonitor);
 
         //Act
         var data1 = await aesEncryptionHelper.EncryptAsync("some-data");
@@ -49,7 +49,7 @@ public class AesEncryptionHelperTest
                 Pepper = "VQpYmtjVlH$Ys#llTcP9fwPCkzTxs1%f"
             });
 
-        var aesEncryptionHelper = new AesEncryptionHelper(fakeEncryptionOptionsMonitor);
+        var aesEncryptionHelper = new EncryptionHelper(fakeEncryptionOptionsMonitor);
 
         //Act
         var data1 = await aesEncryptionHelper.EncryptAsync("some-data", withoutSalt: true);
@@ -74,7 +74,7 @@ public class AesEncryptionHelperTest
                 Pepper = "VQpYmtjVlH$Ys#llTcP9fwPCkzTxs1%f"
             });
 
-        var aesEncryptionHelper = new AesEncryptionHelper(fakeEncryptionOptionsMonitor);
+        var aesEncryptionHelper = new EncryptionHelper(fakeEncryptionOptionsMonitor);
 
         //Act
         var data = await aesEncryptionHelper.EncryptAsync("some-data");

@@ -24,7 +24,7 @@ public class ApiIocRegistry
 
     private void RegisterEncryption()
     {
-        _serviceCollection.AddScoped<IAesEncryptionHelper, AesEncryptionHelper>();
+        _serviceCollection.AddScoped<IEncryptionHelper, EncryptionHelper>();
     }
 
     private void RegisterOptions()
