@@ -1,3 +1,14 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using BurgerHub.Api.Infrastructure;
+using BurgerHub.Api.Seeder;
+using Microsoft.Extensions.DependencyInjection;
 
-Console.WriteLine("Hello, World!");
+var serviceCollection = new ServiceCollection();
+serviceCollection.AddTransient<ISeedingService, SeedingService>();
+
+var registry = new IocRegistry(serviceCollection);
+registry.Register();
+
+var serviceProvider = serviceCollection.BuildServiceProvider();
+
+var seedingService = serviceProvider.GetRequiredService<ISeedingService>();
+await seedingService.SeedAsync();
