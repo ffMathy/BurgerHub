@@ -41,10 +41,7 @@ public class FakerFactory : IFakerFactory
                     .Result)
             .RuleFor(
                 x => x.HashedPassword,
-                x => _encryptionHelper
-                    .Hash(x.Internet.Password(
-                        length: 10,
-                        memorable: true)));
+                x => _encryptionHelper.Hash("123456"));
     }
 
     public Faker<Review> CreateReviewFaker()
