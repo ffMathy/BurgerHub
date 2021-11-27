@@ -1,5 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using BurgerHub.Api.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BurgerHub.Api.Domain.Endpoints.Restaurants.Reviews;
@@ -17,6 +18,7 @@ public class PostReviewForRestaurant : BaseAsyncEndpoint
     .WithRequest<PostReviewRequest>
     .WithoutResponse
 {
+    [Authorize]
     [HttpPost("api/restaurants/{RestaurantId}/review")]
     public override Task<ActionResult> HandleAsync(
         [FromRoute] PostReviewRequest request, 
