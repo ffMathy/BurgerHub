@@ -15,11 +15,19 @@
     <ItemGroup>
       <Content Include="..\BurgerHub.Api\appsettings.Development.json">
         <Link>appsettings.Development.json</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Bogus" Version="34.0.1" />
+      <PackageReference Include="NSubstitute" Version="4.2.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
