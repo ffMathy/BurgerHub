@@ -21,6 +21,7 @@ public record GetRestaurantsByLocationResponse(
 
 public record RestaurantResponse(
     string Name,
+    string Id,
     LocationResponse Location,
     OpeningTimeResponse[] OpeningTimes);
 
@@ -51,7 +52,7 @@ public class GetRestaurantsByLocation : BaseAsyncEndpoint
     [HttpGet("api/restaurants/by-location")]
     public override Task<ActionResult> HandleAsync(
         GetRestaurantsByLocationRequest request,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken = new())
     {
         throw new NotImplementedException();
     }
