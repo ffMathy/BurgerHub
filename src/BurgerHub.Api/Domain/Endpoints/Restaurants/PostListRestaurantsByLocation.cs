@@ -8,41 +8,6 @@ using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace BurgerHub.Api.Domain.Endpoints.Restaurants;
 
-
-public record PostListRestaurantsByLocationRequest(
-    LocationRequest Location,
-    int Offset,
-    [Range(1, 100)] int Limit,
-    [Range(1, int.MaxValue)] long RadiusInMeters);
-
-public record LocationRequest(
-    [Range(-90, 90)] double Latitude,
-    [Range(-180, 180)]double Longitude);
-
-
-public record PostListRestaurantsByLocationResponse(
-    IEnumerable<RestaurantResponse> Restaurants);
-
-public record RestaurantResponse(
-    string Name,
-    string Id,
-    LocationResponse Location,
-    DailyOpeningTimeResponse[] DailyOpenTimes);
-
-public record LocationResponse(
-    double Latitude,
-    double Longitude);
-
-public record DailyOpeningTimeResponse(
-    DayOfWeek DayOfWeek,
-    TimeResponse OpenAt,
-    TimeResponse ClosedAt);
-
-public record TimeResponse(
-    int Hour,
-    int Minute);
-
-
 public class PostListRestaurantsByLocation : BaseAsyncEndpoint
     .WithRequest<PostListRestaurantsByLocationRequest>
     .WithResponse<PostListRestaurantsByLocationResponse>
