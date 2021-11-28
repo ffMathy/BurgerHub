@@ -44,7 +44,7 @@ public class PostReviewForRestaurant : BaseAsyncEndpoint
         if(!ObjectId.TryParse(request.RestaurantId, out var restaurantId))
             return BadRequest("Invalid restaurant ID.");
 
-        var doesRestaurantExist = await DoesRestaurantExistAsync(
+        var doesRestaurantExist = await DoesRestaurantExistInMongoAsync(
             restaurantId, 
             cancellationToken);
         if (!doesRestaurantExist)
@@ -57,7 +57,7 @@ public class PostReviewForRestaurant : BaseAsyncEndpoint
         return Ok();
     }
 
-    private async Task<bool> DoesRestaurantExistAsync(
+    private async Task<bool> DoesRestaurantExistInMongoAsync(
         ObjectId restaurantId, 
         CancellationToken cancellationToken)
     {
