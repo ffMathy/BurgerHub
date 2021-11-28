@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
+using BurgerHub.Api.Tests.Helpers;
 using Destructurama.Attributed;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,6 +11,7 @@ namespace BurgerHub.Api.Tests;
 public class GdprTests
 {
     [TestMethod]
+    [TestCategory(TestCategories.IntegrationCategory)]
     public void Reflection_ScanningAllAssemblyClasses_NoPotentiallyLoggedGdprReferencesFound()
     {
         //Arrange

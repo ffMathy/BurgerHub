@@ -6,6 +6,7 @@ using BurgerHub.Api.Domain.Endpoints.Auth;
 using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Domain.Queries.Users;
 using BurgerHub.Api.Infrastructure.Security.Auth;
+using BurgerHub.Api.Tests.Helpers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -19,6 +20,7 @@ namespace BurgerHub.Api.Tests.Endpoints.Auth;
 public class PostLoginTest
 {
     [TestMethod]
+    [TestCategory(TestCategories.UnitCategory)]
     public async Task HandleAsync_NoUserFound_ReturnsUnauthorizedStatus()
     {
         //Arrange
@@ -42,6 +44,7 @@ public class PostLoginTest
     }
 
     [TestMethod]
+    [TestCategory(TestCategories.UnitCategory)]
     public async Task HandleAsync_UserFound_ReturnsResponseWithGeneratedJwtToken()
     {
         //Arrange
