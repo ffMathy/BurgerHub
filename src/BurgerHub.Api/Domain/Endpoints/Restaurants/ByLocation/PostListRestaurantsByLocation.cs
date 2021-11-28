@@ -29,7 +29,9 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
         return MapRestaurantsToResponse(restaurants);
     }
 
-    private async Task<List<Restaurant>> FetchNearbyRestaurantsFromMongoAsync(PostListRestaurantsByLocationRequest request, CancellationToken cancellationToken)
+    private async Task<List<Restaurant>> FetchNearbyRestaurantsFromMongoAsync(
+        PostListRestaurantsByLocationRequest request, 
+        CancellationToken cancellationToken)
     {
         return await _restaurantsCollection
             .Find(Builders<Restaurant>.Filter.Near(
@@ -44,7 +46,8 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
             .ToListAsync(cancellationToken);
     }
 
-    private static PostListRestaurantsByLocationResponse MapRestaurantsToResponse(List<Restaurant> restaurants)
+    private static PostListRestaurantsByLocationResponse MapRestaurantsToResponse(
+        IEnumerable<Restaurant> restaurants)
     {
         return new PostListRestaurantsByLocationResponse(restaurants
             .Select(x => new RestaurantResponse(
@@ -56,14 +59,16 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
                     .ToArray())));
     }
 
-    private static LocationResponse MapLocationToLocationResponse(GeoJsonPoint<GeoJson2DGeographicCoordinates> location)
+    private static LocationResponse MapLocationToLocationResponse(
+        GeoJsonPoint<GeoJson2DGeographicCoordinates> location)
     {
         return new LocationResponse(
             location.Coordinates.Latitude,
             location.Coordinates.Longitude);
     }
 
-    private static DailyOpeningTimeResponse MapOpeningTimeToOpeningTimeResponse(DailyOpeningTime dailyOpeningTime)
+    private static DailyOpeningTimeResponse MapOpeningTimeToOpeningTimeResponse(
+        DailyOpeningTime dailyOpeningTime)
     {
         return new DailyOpeningTimeResponse(
             dailyOpeningTime.DayOfWeek,
