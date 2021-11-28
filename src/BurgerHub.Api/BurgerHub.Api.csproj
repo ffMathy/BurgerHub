@@ -17,10 +17,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Domain\Endpoints\Restaurants\PostListRestaurantsByLocation.Responses.cs">
+      <Compile Update="Domain\Endpoints\Restaurants\ByLocation\PostListRestaurantsByLocation.Requests.cs">
         <DependentUpon>PostListRestaurantsByLocation.cs</DependentUpon>
       </Compile>
-      <Compile Update="Domain\Endpoints\Restaurants\PostListRestaurantsByLocation.Requests.cs">
+      <Compile Update="Domain\Endpoints\Restaurants\ByLocation\PostListRestaurantsByLocation.Responses.cs">
         <DependentUpon>PostListRestaurantsByLocation.cs</DependentUpon>
       </Compile>
     </ItemGroup>

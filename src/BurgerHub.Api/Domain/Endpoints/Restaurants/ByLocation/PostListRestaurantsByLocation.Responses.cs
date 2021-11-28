@@ -1,4 +1,4 @@
-﻿namespace BurgerHub.Api.Domain.Endpoints.Restaurants;
+﻿namespace BurgerHub.Api.Domain.Endpoints.Restaurants.ByLocation;
 
 public record PostListRestaurantsByLocationResponse(
     IEnumerable<RestaurantResponse> Restaurants);

@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Ardalis.ApiEndpoints;
+﻿using Ardalis.ApiEndpoints;
 using BurgerHub.Api.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 
-namespace BurgerHub.Api.Domain.Endpoints.Restaurants;
+namespace BurgerHub.Api.Domain.Endpoints.Restaurants.ByLocation;
 
 public class PostListRestaurantsByLocation : BaseAsyncEndpoint
     .WithRequest<PostListRestaurantsByLocationRequest>

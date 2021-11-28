@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BurgerHub.Api.Domain.Endpoints.Restaurants;
+namespace BurgerHub.Api.Domain.Endpoints.Restaurants.ByLocation;
 
 public record PostListRestaurantsByLocationRequest(
     LocationRequest Location,
