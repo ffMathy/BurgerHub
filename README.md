@@ -1,5 +1,6 @@
 # BurgerHub
 ![Build status](https://github.com/ffMathy/BurgerHub/actions/workflows/dotnet.yml/badge.svg)
+
 BurgerHub is a sample project intended to demonstrate various skills in various areas.
 
 ## Prerequisites
