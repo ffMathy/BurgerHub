@@ -93,14 +93,14 @@ public class FakerFactory : IFakerFactory
                         x.Address.Longitude(),
                         x.Address.Latitude())))
             .RuleFor(
-                x => x.OpeningTimes,
+                x => x.DailyOpenTimes,
                 x => Enum.GetValues<DayOfWeek>()
-                    .Select(dayOfWeek => new OpeningTime() {
+                    .Select(dayOfWeek => new DailyOpeningTime() {
                         DayOfWeek = dayOfWeek,
-                        OpenTime = new Time() {
+                        OpenAt = new Time() {
                             Hour = x.Random.Number(8, 11)
                         },
-                        CloseTime = new Time() {
+                        ClosedAt = new Time() {
                             Hour = x.Random.Number(16, 21)
                         }
                     })

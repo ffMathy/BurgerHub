@@ -8,14 +8,14 @@ public class Restaurant
     public ObjectId Id { get; set; }
     public string Name { get; set; } = null!;
     public GeoJsonPoint<GeoJson2DGeographicCoordinates> Location { get; set; } = null!;
-    public OpeningTime[] OpeningTimes { get; set; } = null!;
+    public DailyOpeningTime[] DailyOpenTimes { get; set; } = null!;
 }
 
-public class OpeningTime
+public class DailyOpeningTime
 {
     public DayOfWeek DayOfWeek { get; set; }
-    public Time OpenTime { get; set; }
-    public Time CloseTime { get; set; }
+    public Time OpenAt { get; set; } = null!;
+    public Time ClosedAt { get; set; } = null!;
 }
 
 public class Time
