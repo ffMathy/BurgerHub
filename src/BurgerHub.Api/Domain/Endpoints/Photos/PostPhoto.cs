@@ -1,8 +1,11 @@
-﻿using Ardalis.ApiEndpoints;
+﻿using System.Web;
+using Ardalis.ApiEndpoints;
 using BurgerHub.Api.Domain.Models;
+using BurgerHub.Api.Infrastructure.AspNet;
 using BurgerHub.Api.Infrastructure.Security.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BurgerHub.Api.Domain.Endpoints.Photos;
@@ -24,10 +27,28 @@ public class PostPhoto : BaseAsyncEndpoint
     
     [HttpPost("api/photos")]
     [Authorize(Roles = AuthRoles.User)]
-    public override Task<ActionResult> HandleAsync(
-        PostPhotoRequest request, 
+    public override async Task<ActionResult> HandleAsync(
+        [FromForm] PostPhotoRequest request, 
         CancellationToken cancellationToken = new())
     {
-        throw new NotImplementedException();
+        await using var stream = new MemoryStream();
+        await request.File.CopyToAsync(
+            stream,
+            cancellationToken);
+        
+        //TODO: upload memory stream to S3, or use pre-signed URLs
+
+        var userId = User.GetRequiredId();
+        var photo = new Photo()
+        {
+            Id = ObjectId.GenerateNewId(),
+            AuthorUserId = userId,
+            Url = $"https://example.com/{HttpUtility.UrlEncode(request.File.Name)}"
+        };
+        await _photoCollection.InsertOneAsync(
+            photo,
+            cancellationToken: cancellationToken);
+
+        return Ok();
     }
 }
