@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using BurgerHub.Api.Infrastructure.Encryption;
+using BurgerHub.Api.Infrastructure.Security.Encryption;
 using BurgerHub.Api.Tests.Helpers;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,8 +32,8 @@ public class AesEncryptionHelperTest
 
         //Assert
         Assert.AreNotEqual(
-            Convert.ToBase64String(data1),
-            Convert.ToBase64String(data2));
+            data1,
+            data2);
     }
 
     [TestMethod]
@@ -57,8 +57,8 @@ public class AesEncryptionHelperTest
 
         //Assert
         Assert.AreEqual(
-            Convert.ToBase64String(data1),
-            Convert.ToBase64String(data2));
+            data1,
+            data2);
     }
 
     [TestMethod]

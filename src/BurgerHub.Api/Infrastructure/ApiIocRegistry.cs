@@ -1,6 +1,13 @@
-﻿using BurgerHub.Api.Domain.Models;
-using BurgerHub.Api.Infrastructure.Encryption;
+﻿using System.Text;
+using System.Text.Json.Serialization;
+using BurgerHub.Api.Domain.Models;
+using BurgerHub.Api.Infrastructure.AspNet;
+using BurgerHub.Api.Infrastructure.Security.Auth;
+using BurgerHub.Api.Infrastructure.Security.Encryption;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 
 namespace BurgerHub.Api.Infrastructure;
@@ -20,14 +27,66 @@ public class ApiIocRegistry
 
     public void Register()
     {
+        RegisterAspNet();
         RegisterOptions();
         RegisterMongo();
-        RegisterEncryption();
+        RegisterSecurity();
     }
 
-    private void RegisterEncryption()
+    private void RegisterAspNet()
+    {
+        _serviceCollection
+            .AddControllers()
+            .AddJsonOptions(opt =>
+            {
+                opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+        
+        _serviceCollection.AddSwaggerGen();
+
+        _serviceCollection
+            .AddAuthorization()
+            .AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                var jwtOptions = _configuration.GetOptions<JwtOptions>();
+                options.Audience = jwtOptions.Audience;
+                options.TokenValidationParameters = new()
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidAudience = jwtOptions.Audience,
+                    ValidateAudience = true,
+                    ValidateActor = false,
+                    ValidateIssuer = false,
+                    ValidateLifetime = true,
+                    ValidateTokenReplay = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtOptions.PrivateKey))
+                };
+                options.Events = new JwtBearerEvents()
+                {
+                    OnChallenge = async (context) =>
+                    {
+                        context.HandleResponse();
+                            
+                        if (context.AuthenticateFailure != null)
+                        {
+                            context.Response.StatusCode = 401;
+                            await context.HttpContext.Response.WriteAsync("{}");
+                        }
+                    }
+                };
+            });
+    }
+
+    private void RegisterSecurity()
     {
         _serviceCollection.AddScoped<IEncryptionHelper, EncryptionHelper>();
+        _serviceCollection.AddScoped(typeof(IPasswordHasher<>), typeof(PasswordHasher<>));
+        _serviceCollection.AddScoped<IJwtTokenFactory, JwtTokenFactory>();
     }
 
     private void RegisterOptions()
@@ -42,6 +101,7 @@ public class ApiIocRegistry
         
         Configure<MongoOptions>("Mongo");
         Configure<EncryptionOptions>("Encryption");
+        Configure<JwtOptions>("Jwt");
     }
 
     private void RegisterMongo()

@@ -1,6 +1,6 @@
 ﻿using Destructurama.Attributed;
 
-namespace BurgerHub.Api.Infrastructure.Encryption;
+namespace BurgerHub.Api.Infrastructure.Security.Encryption;
 
 public class EncryptionOptions
 {

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BurgerHub.Api.Seeder.Tests;
+namespace BurgerHub.Api.Seeder.Tests.Infrastructure;
 
 [TestClass]
 public class FakerRuleTest

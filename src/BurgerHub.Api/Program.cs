@@ -1,9 +1,8 @@
 using BurgerHub.Api.Infrastructure;
+using BurgerHub.Api.Infrastructure.Security.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
 
 var registry = new ApiIocRegistry(
     builder.Services,

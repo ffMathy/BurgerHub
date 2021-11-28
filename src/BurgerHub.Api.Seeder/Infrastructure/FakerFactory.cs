@@ -1,7 +1,8 @@
 ﻿using Bogus;
 using Bogus.DataSets;
 using BurgerHub.Api.Domain.Models;
-using BurgerHub.Api.Infrastructure.Encryption;
+using BurgerHub.Api.Infrastructure.Security.Encryption;
+using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Driver.GeoJsonObjectModel;
 
@@ -17,14 +18,6 @@ public interface IFakerFactory
 
 public class FakerFactory : IFakerFactory
 {
-    private readonly IEncryptionHelper _encryptionHelper;
-
-    public FakerFactory(
-        IEncryptionHelper encryptionHelper)
-    {
-        _encryptionHelper = encryptionHelper;
-    }
-    
     public Faker<User> CreateUserFaker()
     {
         return new Faker<User>()
@@ -33,24 +26,18 @@ public class FakerFactory : IFakerFactory
                 x => x.Id,
                 ObjectId.GenerateNewId)
             .RuleFor(
-                x => x.EncryptedEmail,
-                x => _encryptionHelper
-                    .EncryptAsync(
-                        x.Person.Email,
-                        withoutSalt: true)
-                    .Result)
-            .RuleFor(
-                x => x.HashedPassword,
-                x => _encryptionHelper.Hash("123456"));
+                x => x.Name,
+                x => x.Name.FirstName())
+            .Ignore(x => x.EncryptedEmail)
+            .Ignore(x => x.HashedPassword);
     }
 
     public Faker<Review> CreateReviewFaker()
     {
         return new Faker<Review>()
             .StrictMode(true)
-            .RuleFor(
-                x => x.AuthorUserId,
-                ObjectId.GenerateNewId)
+            .Ignore(x => x.AuthorUserId)
+            .Ignore(x => x.RestaurantId)
             .RuleForType(
                 typeof(ReviewScores),
                 x => new ReviewScores()

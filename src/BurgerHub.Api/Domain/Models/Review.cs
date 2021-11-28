@@ -5,6 +5,7 @@ namespace BurgerHub.Api.Domain.Models;
 public class Review
 {
     public ObjectId AuthorUserId { get; set; }
+    public ObjectId RestaurantId { get; set; }
     public ReviewScores Scores { get; set; } = null!;
 }
 

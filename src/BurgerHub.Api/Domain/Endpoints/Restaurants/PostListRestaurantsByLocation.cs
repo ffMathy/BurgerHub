@@ -1,4 +1,5 @@
-﻿using Ardalis.ApiEndpoints;
+﻿using System.ComponentModel.DataAnnotations;
+using Ardalis.ApiEndpoints;
 using BurgerHub.Api.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +12,12 @@ namespace BurgerHub.Api.Domain.Endpoints.Restaurants;
 public record PostListRestaurantsByLocationRequest(
     LocationRequest Location,
     int Offset,
-    int Limit,
-    long RadiusInMeters);
+    [Range(1, 100)] int Limit,
+    [Range(1, int.MaxValue)] long RadiusInMeters);
 
 public record LocationRequest(
-    double Latitude,
-    double Longitude);
+    [Range(-90, 90)] double Latitude,
+    [Range(-180, 180)]double Longitude);
 
 
 public record PostListRestaurantsByLocationResponse(
@@ -60,15 +61,6 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
         [FromBody] PostListRestaurantsByLocationRequest request,
         CancellationToken cancellationToken = new())
     {
-        if (request.Limit == 0)
-            return BadRequest("Limit must be larger than 0.");
-
-        if (request.Limit > 100)
-            return BadRequest("Limit must be below 100.");
-        
-        if(request.RadiusInMeters == 0)
-            return BadRequest("Radius must be larger than 0.");
-        
         var restaurants = await FetchNearbyRestaurantsFromMongoAsync(request, cancellationToken);
         return MapRestaurantsToResponse(restaurants);
     }
@@ -81,7 +73,8 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
                 new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
                     new GeoJson2DGeographicCoordinates(
                         request.Location.Longitude,
-                        request.Location.Latitude))))
+                        request.Location.Latitude)),
+                request.RadiusInMeters))
             .Skip(request.Offset)
             .Limit(request.Limit)
             .ToListAsync(cancellationToken);

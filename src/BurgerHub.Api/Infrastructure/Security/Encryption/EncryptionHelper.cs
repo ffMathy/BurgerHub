@@ -3,14 +3,13 @@ using System.Text;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Options;
 
-namespace BurgerHub.Api.Infrastructure.Encryption;
+namespace BurgerHub.Api.Infrastructure.Security.Encryption;
 
 public class EncryptionHelper : IEncryptionHelper
 {
     private readonly IOptionsMonitor<EncryptionOptions> _encryptionOptionsMonitor;
 
     private const int KeySize = 256;
-    private const int BlockSize = 128;
 
     public EncryptionHelper(
         IOptionsMonitor<EncryptionOptions> encryptionOptionsMonitor)
@@ -18,7 +17,7 @@ public class EncryptionHelper : IEncryptionHelper
         _encryptionOptionsMonitor = encryptionOptionsMonitor;
     }
 
-    public async Task<byte[]> EncryptAsync(string plainText, bool withoutSalt = false)
+    public async Task<string> EncryptAsync(string plainText, bool withoutSalt = false)
     {
         var key = _encryptionOptionsMonitor.CurrentValue.Pepper;
         if (key == null)
@@ -43,34 +42,20 @@ public class EncryptionHelper : IEncryptionHelper
         }
 
         var encrypted = memoryStream.ToArray();
-        return encrypted;
+        return Convert.ToBase64String(encrypted);
     }
 
-    public byte[] Hash(string plainText)
-    {
-        var key = _encryptionOptionsMonitor.CurrentValue.Pepper;
-        if (key == null)
-            throw new InvalidOperationException("Could not find a pepper in the configuration of the application.");
-        
-        var salt = RandomNumberGenerator.GetBytes(BlockSize);
-        return KeyDerivation.Pbkdf2(
-            plainText + key,
-            salt,
-            KeyDerivationPrf.HMACSHA512,
-            iterationCount: 100000,
-            numBytesRequested: KeySize / 8);
-    }
-
-    public async Task<string> DecryptAsync(byte[] cipherText)
+    public async Task<string> DecryptAsync(string cipherText)
     {
         var key = _encryptionOptionsMonitor.CurrentValue.Pepper;
         if (key == null)
             throw new InvalidOperationException("Could not find a pepper in the configuration of the application.");
 
-        var dataBytes = ExtractDataBytesFromCipherText(cipherText);
+        var cipherTextBytes = Convert.FromBase64String(cipherText);
+        var dataBytes = ExtractDataBytesFromCipherText(cipherTextBytes);
 
         using var aes = GetAesAlgorithm(key);
-        aes.IV = ExtractInitializationVectorFromCipherText(cipherText);
+        aes.IV = ExtractInitializationVectorFromCipherText(cipherTextBytes);
 
         using var decryptor = aes.CreateDecryptor(
             aes.Key,

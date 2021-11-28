@@ -1,4 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
+using BurgerHub.Api.Infrastructure.Security.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,8 +18,8 @@ public class PostPicture : BaseAsyncEndpoint
     }
     
     [HttpPost("api/pictures")]
-    [Authorize]
-    public override Task<ActionResult> HandleAsync(PostPictureRequest request, CancellationToken cancellationToken = new CancellationToken())
+    [Authorize(Roles = AuthRoles.User)]
+    public override Task<ActionResult> HandleAsync(PostPictureRequest request, CancellationToken cancellationToken = new())
     {
         throw new NotImplementedException();
     }
