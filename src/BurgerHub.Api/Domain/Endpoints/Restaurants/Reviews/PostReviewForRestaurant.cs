@@ -4,7 +4,6 @@ using BurgerHub.Api.Infrastructure.AspNet;
 using BurgerHub.Api.Infrastructure.Security.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MongoDB.Bson;
 using MongoDB.Driver;
 

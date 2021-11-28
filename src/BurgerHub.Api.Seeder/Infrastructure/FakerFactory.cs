@@ -1,8 +1,6 @@
 ﻿using Bogus;
 using Bogus.DataSets;
 using BurgerHub.Api.Domain.Models;
-using BurgerHub.Api.Infrastructure.Security.Encryption;
-using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Driver.GeoJsonObjectModel;
 

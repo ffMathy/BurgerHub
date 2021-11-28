@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using BurgerHub.Api.Infrastructure.Security.Encryption;
 using BurgerHub.Api.Tests.Helpers;

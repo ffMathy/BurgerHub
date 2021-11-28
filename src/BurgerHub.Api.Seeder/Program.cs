@@ -3,7 +3,6 @@ using BurgerHub.Api.Seeder;
 using BurgerHub.Api.Seeder.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 Randomizer.Seed = new Random(1337);
 

@@ -1,6 +1,4 @@
 using BurgerHub.Api.Infrastructure;
-using BurgerHub.Api.Infrastructure.Security.Auth;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
