@@ -8,56 +8,56 @@ using MongoDB.Driver.GeoJsonObjectModel;
 namespace BurgerHub.Api.Domain.Endpoints.Restaurants;
 
 
-public record GetRestaurantsByLocationRequest(
-    [FromQuery] LocationRequest Location,
-    [FromQuery] int Offset,
-    [FromQuery] int Limit,
-    [FromQuery] long RadiusInMeters);
+public record PostListRestaurantsByLocationRequest(
+    LocationRequest Location,
+    int Offset,
+    int Limit,
+    long RadiusInMeters);
 
 public record LocationRequest(
-    [FromQuery] double Latitude,
-    [FromQuery] double Longitude);
+    double Latitude,
+    double Longitude);
 
 
-public record GetRestaurantsByLocationResponse(
+public record PostListRestaurantsByLocationResponse(
     IEnumerable<RestaurantResponse> Restaurants);
 
 public record RestaurantResponse(
     string Name,
     string Id,
     LocationResponse Location,
-    OpeningTimeResponse[] OpeningTimes);
+    DailyOpeningTimeResponse[] DailyOpenTimes);
 
 public record LocationResponse(
     double Latitude,
     double Longitude);
 
-public record OpeningTimeResponse(
+public record DailyOpeningTimeResponse(
     DayOfWeek DayOfWeek,
-    TimeResponse OpenTime,
-    TimeResponse CloseTime);
+    TimeResponse OpenAt,
+    TimeResponse ClosedAt);
 
 public record TimeResponse(
     int Hour,
     int Minute);
 
 
-public class GetRestaurantsByLocation : BaseAsyncEndpoint
-    .WithRequest<GetRestaurantsByLocationRequest>
-    .WithResponse<GetRestaurantsByLocationResponse>
+public class PostListRestaurantsByLocation : BaseAsyncEndpoint
+    .WithRequest<PostListRestaurantsByLocationRequest>
+    .WithResponse<PostListRestaurantsByLocationResponse>
 {
     private readonly IMongoCollection<Restaurant> _restaurantsCollection;
 
-    public GetRestaurantsByLocation(
+    public PostListRestaurantsByLocation(
         IMongoCollection<Restaurant> restaurantsCollection)
     {
         _restaurantsCollection = restaurantsCollection;
     }
 
     [AllowAnonymous]
-    [HttpGet("api/restaurants/by-location")]
-    public override async Task<ActionResult<GetRestaurantsByLocationResponse>> HandleAsync(
-        [FromQuery] GetRestaurantsByLocationRequest request,
+    [HttpPost("api/restaurants/by-location")]
+    public override async Task<ActionResult<PostListRestaurantsByLocationResponse>> HandleAsync(
+        [FromBody] PostListRestaurantsByLocationRequest request,
         CancellationToken cancellationToken = new())
     {
         if (request.Limit == 0)
@@ -69,7 +69,13 @@ public class GetRestaurantsByLocation : BaseAsyncEndpoint
         if(request.RadiusInMeters == 0)
             return BadRequest("Radius must be larger than 0.");
         
-        var restaurants = await _restaurantsCollection
+        var restaurants = await FetchNearbyRestaurantsFromMongoAsync(request, cancellationToken);
+        return MapRestaurantsToResponse(restaurants);
+    }
+
+    private async Task<List<Restaurant>> FetchNearbyRestaurantsFromMongoAsync(PostListRestaurantsByLocationRequest request, CancellationToken cancellationToken)
+    {
+        return await _restaurantsCollection
             .Find(Builders<Restaurant>.Filter.Near(
                 x => x.Location,
                 new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
@@ -79,13 +85,16 @@ public class GetRestaurantsByLocation : BaseAsyncEndpoint
             .Skip(request.Offset)
             .Limit(request.Limit)
             .ToListAsync(cancellationToken);
-        
-        return new GetRestaurantsByLocationResponse(restaurants
+    }
+
+    private static PostListRestaurantsByLocationResponse MapRestaurantsToResponse(List<Restaurant> restaurants)
+    {
+        return new PostListRestaurantsByLocationResponse(restaurants
             .Select(x => new RestaurantResponse(
                 x.Name,
                 x.Id.ToString(),
                 MapLocationToLocationResponse(x.Location),
-                x.OpeningTimes
+                x.DailyOpenTimes
                     .Select(MapOpeningTimeToOpeningTimeResponse)
                     .ToArray())));
     }
@@ -97,12 +106,12 @@ public class GetRestaurantsByLocation : BaseAsyncEndpoint
             location.Coordinates.Longitude);
     }
 
-    private static OpeningTimeResponse MapOpeningTimeToOpeningTimeResponse(OpeningTime openingTime)
+    private static DailyOpeningTimeResponse MapOpeningTimeToOpeningTimeResponse(DailyOpeningTime dailyOpeningTime)
     {
-        return new OpeningTimeResponse(
-            openingTime.DayOfWeek,
-            MapTimeToTimeResponse(openingTime.OpenTime),
-            MapTimeToTimeResponse(openingTime.CloseTime));
+        return new DailyOpeningTimeResponse(
+            dailyOpeningTime.DayOfWeek,
+            MapTimeToTimeResponse(dailyOpeningTime.OpenAt),
+            MapTimeToTimeResponse(dailyOpeningTime.ClosedAt));
     }
 
     private static TimeResponse MapTimeToTimeResponse(Time time)
