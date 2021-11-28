@@ -6,7 +6,7 @@ BurgerHub is a sample project intended to demonstrate various skills in various 
 - DOTNET SDK 6.0.
 
 ## Starting dependencies
-Run `scripts/start-dependencies.bat`.
+Run `scripts/start-dependencies.bat` to start dependencies. For now, the only dependency is Mongo.
 
 ## Seeding with random data
 Start the `BurgerHub.Api.Seeder` Console Application project.
