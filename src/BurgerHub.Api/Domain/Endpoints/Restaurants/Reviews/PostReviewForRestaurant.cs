@@ -1,11 +1,13 @@
 ﻿using Ardalis.ApiEndpoints;
+using Ardalis.Result.AspNetCore;
+using BurgerHub.Api.Domain.Commands;
 using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Infrastructure.AspNet;
 using BurgerHub.Api.Infrastructure.Security.Auth;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace BurgerHub.Api.Domain.Endpoints.Restaurants.Reviews;
 
@@ -20,74 +22,36 @@ public record ReviewScoresRequest(
 
 public class PostReviewForRestaurant : BaseAsyncEndpoint
     .WithRequest<PostReviewRequest>
-    .WithoutResponse
+    .WithResponse<Unit>
 {
-    private readonly IMongoCollection<Review> _reviewCollection;
-    private readonly IMongoCollection<Restaurant> _restaurantCollection;
+    private readonly IMediator _mediator;
 
     public PostReviewForRestaurant(
-        IMongoCollection<Review> reviewCollection,
-        IMongoCollection<Restaurant> restaurantCollection)
+        IMediator mediator)
     {
-        _reviewCollection = reviewCollection;
-        _restaurantCollection = restaurantCollection;
+        _mediator = mediator;
     }
     
     //TODO: change route to POST api/restaurants/{restaurantId}/reviews, so restaurantId is inferred from route: https://github.com/ffMathy/BurgerHub/issues/6
+    
     [Authorize(Roles = AuthRoles.User)]
     [HttpPost("api/restaurants/reviews")]
-    public override async Task<ActionResult> HandleAsync(
+    public override async Task<ActionResult<Unit>> HandleAsync(
         [FromBody] PostReviewRequest request, 
         CancellationToken cancellationToken = new())
     {
         if(!ObjectId.TryParse(request.RestaurantId, out var restaurantId))
             return BadRequest("Invalid restaurant ID.");
 
-        var doesRestaurantExist = await DoesRestaurantExistInMongoAsync(
-            restaurantId, 
+        var result = await _mediator.Send(
+            new UpsertReviewCommand(
+                restaurantId,
+                User.GetRequiredId(),
+                new ReviewScoresArgument(
+                    request.Scores.Texture,
+                    request.Scores.Taste,
+                    request.Scores.Visual)),
             cancellationToken);
-        if (!doesRestaurantExist)
-            return BadRequest("The provided restaurant does not exist.");
-        
-        await UpsertReviewInMongoAsync(
-            request, 
-            cancellationToken);
-
-        return Ok();
-    }
-
-    private async Task<bool> DoesRestaurantExistInMongoAsync(
-        ObjectId restaurantId, 
-        CancellationToken cancellationToken)
-    {
-        var matchCount = await _restaurantCollection
-            .Find(x => x.Id == restaurantId)
-            .Limit(1)
-            .CountDocumentsAsync(cancellationToken);
-        return matchCount > 0;
-    }
-
-    private async Task UpsertReviewInMongoAsync(
-        PostReviewRequest request, 
-        CancellationToken cancellationToken)
-    {
-        var userId = User.GetRequiredId();
-        var restaurantId = ObjectId.Parse(request.RestaurantId);
-        
-        await _reviewCollection.UpdateOneAsync(
-            review =>
-                review.AuthorUserId == userId &&
-                review.RestaurantId == restaurantId,
-            Builders<Review>.Update
-                .SetOnInsert(x => x.RestaurantId, restaurantId)
-                .SetOnInsert(x => x.AuthorUserId, userId)
-                .Set(x => x.Scores.Taste, request.Scores.Taste)
-                .Set(x => x.Scores.Texture, request.Scores.Texture)
-                .Set(x => x.Scores.Visual, request.Scores.Visual),
-            new UpdateOptions()
-            {
-                IsUpsert = true
-            },
-            cancellationToken);
+        return this.ToActionResult(result);
     }
 }

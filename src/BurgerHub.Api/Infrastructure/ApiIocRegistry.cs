@@ -4,6 +4,7 @@ using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Infrastructure.AspNet;
 using BurgerHub.Api.Infrastructure.Security.Auth;
 using BurgerHub.Api.Infrastructure.Security.Encryption;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -31,6 +32,12 @@ public class ApiIocRegistry
         RegisterOptions();
         RegisterMongo();
         RegisterSecurity();
+        RegisterMediatR();
+    }
+
+    private void RegisterMediatR()
+    {
+        _serviceCollection.AddMediatR(typeof(ApiIocRegistry).Assembly);
     }
 
     private void RegisterAspNet()

@@ -1,8 +1,10 @@
 ﻿using System.Web;
 using Ardalis.ApiEndpoints;
+using BurgerHub.Api.Domain.Commands;
 using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Infrastructure.AspNet;
 using BurgerHub.Api.Infrastructure.Security.Auth;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -17,12 +19,12 @@ public class PostPhoto : BaseAsyncEndpoint
     .WithRequest<PostPhotoRequest>
     .WithoutResponse
 {
-    private readonly IMongoCollection<Photo> _photoCollection;
+    private readonly IMediator _mediator;
 
     public PostPhoto(
-        IMongoCollection<Photo> photoCollection)
+        IMediator mediator)
     {
-        _photoCollection = photoCollection;
+        _mediator = mediator;
     }
     
     [HttpPost("api/photos")]
@@ -38,16 +40,11 @@ public class PostPhoto : BaseAsyncEndpoint
         
         //TODO: upload memory stream to S3, or use pre-signed URLs
 
-        var userId = User.GetRequiredId();
-        var photo = new Photo()
-        {
-            Id = ObjectId.GenerateNewId(),
-            AuthorUserId = userId,
-            Url = $"https://example.com/{HttpUtility.UrlEncode(request.File.Name)}"
-        };
-        await _photoCollection.InsertOneAsync(
-            photo,
-            cancellationToken: cancellationToken);
+        await _mediator.Send(
+            new UploadPhotoCommand(
+                User.GetRequiredId(),
+                stream.ToArray()),
+            cancellationToken);
 
         return Ok();
     }

@@ -1,8 +1,11 @@
 ﻿using System.Security.Claims;
 using Ardalis.ApiEndpoints;
 using BurgerHub.Api.Domain.Models;
+using BurgerHub.Api.Domain.Queries;
+using BurgerHub.Api.Domain.Queries.Users;
 using BurgerHub.Api.Infrastructure.Security.Auth;
 using BurgerHub.Api.Infrastructure.Security.Encryption;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -23,23 +26,16 @@ public class PostLogin : BaseAsyncEndpoint
     .WithResponse<PostLoginResponse>
 {
     private readonly IJwtTokenFactory _jwtTokenFactory;
-    private readonly IEncryptionHelper _encryptionHelper;
-    private readonly IPasswordHasher<User> _passwordHasher;
-
-    private readonly IMongoCollection<User> _userCollection;
+    private readonly IMediator _mediator;
     
     private const string AuthenticationFailureMessage = "Invalid email or password";
 
     public PostLogin(
         IJwtTokenFactory jwtTokenFactory,
-        IEncryptionHelper encryptionHelper,
-        IPasswordHasher<User> passwordHasher,
-        IMongoCollection<User> userCollection)
+        IMediator mediator)
     {
         _jwtTokenFactory = jwtTokenFactory;
-        _encryptionHelper = encryptionHelper;
-        _passwordHasher = passwordHasher;
-        _userCollection = userCollection;
+        _mediator = mediator;
     }
     
     [AllowAnonymous]
@@ -48,33 +44,16 @@ public class PostLogin : BaseAsyncEndpoint
         PostLoginRequest request, 
         CancellationToken cancellationToken = new())
     {
-        var user = await FetchUserByEmailFromMongoAsync(
-            request.Email, 
+        var user = await _mediator.Send(
+            new GetUserByCredentialsQuery(
+                request.Email,
+                request.Password),
             cancellationToken);
         if (user == null)
-            return Unauthorized(AuthenticationFailureMessage);
-
-        var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(
-            user,
-            user.HashedPassword,
-            request.Password);
-        if(passwordVerificationResult == PasswordVerificationResult.Failed)
             return Unauthorized(AuthenticationFailureMessage);
         
         var bearerToken = CreateTokenForUser(user);
         return new PostLoginResponse(bearerToken);
-    }
-
-    private async Task<User?> FetchUserByEmailFromMongoAsync(
-        string plainTextEmailAddress, 
-        CancellationToken cancellationToken)
-    {
-        var encryptedEmailAddress = await _encryptionHelper.EncryptAsync(
-            plainTextEmailAddress,
-            withoutSalt: true);
-        return await _userCollection
-            .Find(x => x.EncryptedEmail == encryptedEmailAddress)
-            .SingleOrDefaultAsync(cancellationToken);
     }
 
     private string CreateTokenForUser(User user)
