@@ -1,8 +1,9 @@
 ﻿using Ardalis.ApiEndpoints;
 using BurgerHub.Api.Domain.Models;
+using BurgerHub.Api.Domain.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace BurgerHub.Api.Domain.Endpoints.Restaurants.ByLocation;
@@ -11,12 +12,12 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
     .WithRequest<PostListRestaurantsByLocationRequest>
     .WithResponse<PostListRestaurantsByLocationResponse>
 {
-    private readonly IMongoCollection<Restaurant> _restaurantsCollection;
+    private readonly IMediator _mediator;
 
     public PostListRestaurantsByLocation(
-        IMongoCollection<Restaurant> restaurantsCollection)
+        IMediator mediator)
     {
-        _restaurantsCollection = restaurantsCollection;
+        _mediator = mediator;
     }
 
     [AllowAnonymous]
@@ -25,25 +26,16 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
         [FromBody] PostListRestaurantsByLocationRequest request,
         CancellationToken cancellationToken = new())
     {
-        var restaurants = await FetchNearbyRestaurantsFromMongoAsync(request, cancellationToken);
+        var restaurants = await _mediator.Send(
+            new GetNearbyRestaurantsQuery(
+                new LocationArguments(
+                    request.Location.Latitude,
+                    request.Location.Longitude),
+                request.RadiusInMeters,
+                request.Limit,
+                request.Offset),
+            cancellationToken);
         return MapRestaurantsToResponse(restaurants);
-    }
-
-    private async Task<List<Restaurant>> FetchNearbyRestaurantsFromMongoAsync(
-        PostListRestaurantsByLocationRequest request, 
-        CancellationToken cancellationToken)
-    {
-        return await _restaurantsCollection
-            .Find(Builders<Restaurant>.Filter.Near(
-                x => x.Location,
-                new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
-                    new GeoJson2DGeographicCoordinates(
-                        request.Location.Longitude,
-                        request.Location.Latitude)),
-                request.RadiusInMeters))
-            .Skip(request.Offset)
-            .Limit(request.Limit)
-            .ToListAsync(cancellationToken);
     }
 
     private static PostListRestaurantsByLocationResponse MapRestaurantsToResponse(
