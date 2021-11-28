@@ -1,12 +1,16 @@
 ﻿using BurgerHub.Api.Domain.Models;
+using Destructurama.Attributed;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace BurgerHub.Api.Domain.Queries.Users;
 
-public record GetUserByCredentialsQuery(
-    string Email,
-    string Password) : IRequest<User?>;
+public record GetUserByCredentialsQuery : IRequest<User?>
+{
+    [NotLogged] public string Email { get; init; } = null!;
+
+    [NotLogged] public string Password { get; init; } = null!;
+}
 
 public class GetUserByCredentialsQueryHandler : IRequestHandler<GetUserByCredentialsQuery, User?>
 {
@@ -20,9 +24,9 @@ public class GetUserByCredentialsQueryHandler : IRequestHandler<GetUserByCredent
         _mediator = mediator;
         _passwordHasher = passwordHasher;
     }
-    
+
     public async Task<User?> Handle(
-        GetUserByCredentialsQuery request, 
+        GetUserByCredentialsQuery request,
         CancellationToken cancellationToken)
     {
         var user = await _mediator.Send(
@@ -30,7 +34,7 @@ public class GetUserByCredentialsQueryHandler : IRequestHandler<GetUserByCredent
             cancellationToken);
         if (user == null)
             return null;
-        
+
         var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(
             user,
             user.HashedPassword,

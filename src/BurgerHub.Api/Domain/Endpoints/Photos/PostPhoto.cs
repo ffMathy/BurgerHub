@@ -37,9 +37,10 @@ public class PostPhoto : BaseAsyncEndpoint
         //TODO: upload memory stream to S3, or use pre-signed URLs
 
         await _mediator.Send(
-            new UploadPhotoCommand(
-                User.GetRequiredId(),
-                stream.ToArray()),
+            new UploadPhotoCommand(User.GetRequiredId())
+            {
+                Bytes = stream.ToArray()
+            },
             cancellationToken);
 
         return Ok();

@@ -1,4 +1,5 @@
 ﻿using BurgerHub.Api.Domain.Models;
+using Destructurama.Attributed;
 using MediatR;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -6,8 +7,10 @@ using MongoDB.Driver;
 namespace BurgerHub.Api.Domain.Commands;
 
 public record UploadPhotoCommand(
-    ObjectId AuthorUserId,
-    byte[] Bytes) : IRequest;
+    ObjectId AuthorUserId) : IRequest
+{
+    [NotLogged] public byte[] Bytes { get; init; } = null!;
+}
 
 public class UploadPhotoCommandHandler : IRequestHandler<UploadPhotoCommand>
 {

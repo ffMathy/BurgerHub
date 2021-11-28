@@ -41,9 +41,11 @@ public class PostLogin : BaseAsyncEndpoint
         CancellationToken cancellationToken = new())
     {
         var user = await _mediator.Send(
-            new GetUserByCredentialsQuery(
-                request.Email,
-                request.Password),
+            new GetUserByCredentialsQuery()
+            {
+                Email = request.Email,
+                Password = request.Password
+            },
             cancellationToken);
         if (user == null)
             return Unauthorized(AuthenticationFailureMessage);

@@ -3,6 +3,7 @@ using BurgerHub.Api.Domain.Models;
 using MediatR;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using ILogger = Serilog.ILogger;
 
 namespace BurgerHub.Api.Domain.Commands;
 
@@ -20,15 +21,18 @@ public class UpsertReviewCommandHandler : IRequestHandler<UpsertReviewCommand, R
 {
     private readonly IMongoCollection<Review> _reviewCollection;
     private readonly IMongoCollection<Restaurant> _restaurantCollection;
+    private readonly ILogger _logger;
 
     private const string RestaurantDoesNotExistErrorCode = "RESTAURANT_DOES_NOT_EXIST";
 
     public UpsertReviewCommandHandler(
         IMongoCollection<Review> reviewCollection, 
-        IMongoCollection<Restaurant> restaurantCollection)
+        IMongoCollection<Restaurant> restaurantCollection,
+        ILogger logger)
     {
         _reviewCollection = reviewCollection;
         _restaurantCollection = restaurantCollection;
+        _logger = logger;
     }
 
     public async Task<Result<Unit>> Handle(
@@ -40,6 +44,8 @@ public class UpsertReviewCommandHandler : IRequestHandler<UpsertReviewCommand, R
             cancellationToken);
         if (!doesRestaurantExist)
         {
+            _logger.Warning("Restaurant does not exist");
+            
             return Result<Unit>.Invalid(new ()
             {
                 new ValidationError()
