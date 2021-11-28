@@ -126,6 +126,16 @@ public class SeedingService : ISeedingService
     {
         await _reviewCollection.DeleteManyAsync(FilterDefinition<Review>.Empty);
 
+        await _reviewCollection.Indexes.DropAllAsync();
+        await _reviewCollection.Indexes.CreateOneAsync(new CreateIndexModel<Review>(
+            Builders<Review>.IndexKeys
+                .Ascending(x => x.RestaurantId)
+                .Ascending(x => x.AuthorUserId),
+            new CreateIndexOptions()
+            {
+                Unique = true
+            }));
+
         var faker = new Faker();
         var reviewFaker = _fakerFactory.CreateReviewFaker();
         
