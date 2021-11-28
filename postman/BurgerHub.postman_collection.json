@@ -1,0 +1,154 @@
+{
+	"info": {
+		"_postman_id": "b529eb74-106d-4a2e-8427-13d482f7782e",
+		"name": "BurgerHub",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST /api/auth/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"mathias@example.com\",\r\n  \"password\": \"123456\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7155/api/auth/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7155",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /api/restaurants/reviews",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MWEyZGRlODc3NjZhMTc4YWJkZjZkZTYiLCJuYW1lIjoiQ2Fzc2lkeSIsInJvbGUiOiJVc2VyIiwibmJmIjoxNjM4MDY0NzA2LCJleHAiOjE2MzgwODI3MDYsImlhdCI6MTYzODA2NDcwNiwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzE1NSIsImF1ZCI6IkJ1cmdlckh1YiBjbGllbnRzIn0.0ylsy7uwTREBgKygxM3vjv5TDhykq7G41eRrZAazhq9oQEX0OIAa1rpguwc0bQY22XfeyyRWLwR20Lu8hBG-Wg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"restaurantId\": \"61a2dde87766a178abdf6ddf\",\r\n    \"scores\": {\r\n        \"texture\": \"bad\",\r\n        \"taste\": \"neutral\",\r\n        \"visual\": \"great\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7155/api/restaurants/reviews",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7155",
+					"path": [
+						"api",
+						"restaurants",
+						"reviews"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /api/photos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MWEyZGRlODc3NjZhMTc4YWJkZjZkZTYiLCJuYW1lIjoiQ2Fzc2lkeSIsInJvbGUiOiJVc2VyIiwibmJmIjoxNjM4MDY0NzA2LCJleHAiOjE2MzgwODI3MDYsImlhdCI6MTYzODA2NDcwNiwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzE1NSIsImF1ZCI6IkJ1cmdlckh1YiBjbGllbnRzIn0.0ylsy7uwTREBgKygxM3vjv5TDhykq7G41eRrZAazhq9oQEX0OIAa1rpguwc0bQY22XfeyyRWLwR20Lu8hBG-Wg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/mathi/OneDrive/Docs/Ivaerksaetteri/Sponsorkit/Assets/Bountyhunt.png"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7155/api/photos",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7155",
+					"path": [
+						"api",
+						"photos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /api/restaurants/by-location",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"location\": {\r\n    \"latitude\": 56.1425364,\r\n    \"longitude\": 10.2097512\r\n  },\r\n  \"offset\": 0,\r\n  \"limit\": 50,\r\n  \"radiusInMeters\": 10000000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7155/api/restaurants/by-location",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7155",
+					"path": [
+						"api",
+						"restaurants",
+						"by-location"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
