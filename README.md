@@ -3,7 +3,7 @@ BurgerHub is a sample project intended to demonstrate various skills in various 
 
 ## Prerequisites
 - Docker installed.
-- dotnet SDK 6.0
+- DOTNET SDK 6.0.
 
 ## Starting dependencies
 Run `scripts/start-dependencies.bat`.
