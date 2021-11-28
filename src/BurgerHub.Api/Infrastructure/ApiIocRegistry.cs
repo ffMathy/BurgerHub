@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Infrastructure.AspNet;
+using BurgerHub.Api.Infrastructure.Behaviors;
 using BurgerHub.Api.Infrastructure.Security.Auth;
 using BurgerHub.Api.Infrastructure.Security.Encryption;
 using MediatR;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using Serilog;
 
 namespace BurgerHub.Api.Infrastructure;
 
@@ -38,6 +40,10 @@ public class ApiIocRegistry
     private void RegisterMediatR()
     {
         _serviceCollection.AddMediatR(typeof(ApiIocRegistry).Assembly);
+
+        _serviceCollection.AddTransient(
+            typeof(IPipelineBehavior<,>),
+            typeof(LoggingBehavior<,>));
     }
 
     private void RegisterAspNet()

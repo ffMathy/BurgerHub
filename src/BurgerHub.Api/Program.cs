@@ -1,6 +1,13 @@
 using BurgerHub.Api.Infrastructure;
+using Destructurama;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog((_, loggerConfiguration) => loggerConfiguration
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .MinimumLevel.Verbose()
+    .Destructure.UsingAttributes());
 
 var registry = new ApiIocRegistry(
     builder.Services,
