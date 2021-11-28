@@ -3,7 +3,6 @@ using BurgerHub.Api.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var registry = new ApiIocRegistry(
@@ -25,5 +24,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHttpsRedirection();
 
 app.Run();

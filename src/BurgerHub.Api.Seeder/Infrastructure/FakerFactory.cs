@@ -79,6 +79,9 @@ public class FakerFactory : IFakerFactory
     public Faker<Restaurant> CreateRestaurantFaker()
     {
         return new Faker<Restaurant>()
+            .RuleFor(
+                x => x.Id,
+                ObjectId.GenerateNewId)
             .StrictMode(true)
             .RuleFor(
                 x => x.Name,
@@ -91,17 +94,17 @@ public class FakerFactory : IFakerFactory
                         x.Address.Latitude())))
             .RuleFor(
                 x => x.OpeningTimes,
-                x => x.Random.ArrayElements(x.Random
-                    .EnumValues<DayOfWeek>()
+                x => Enum.GetValues<DayOfWeek>()
                     .Select(dayOfWeek => new OpeningTime() {
                         DayOfWeek = dayOfWeek,
-                        OpenTimeUtc = x.Date.BetweenTimeOnly(
-                            new TimeOnly(8, 0),
-                            new TimeOnly(11, 0)),
-                        CloseTimeUtc = x.Date.BetweenTimeOnly(
-                            new TimeOnly(16, 0),
-                            new TimeOnly(21, 0))
+                        OpenTime = new Time() {
+                            Hour = x.Random.Number(8, 11)
+                        },
+                        CloseTime = new Time() {
+                            Hour = x.Random.Number(16, 21)
+                        }
                     })
-                    .ToArray()));
+                    .OrderBy(y => y.DayOfWeek)
+                    .ToArray());
     }
 }

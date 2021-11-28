@@ -47,6 +47,8 @@ public class SeedingService : ISeedingService
 
     private async Task SeedUsersAsync()
     {
+        await _userCollection.DeleteManyAsync(FilterDefinition<User>.Empty);
+        
         var userFaker = _fakerFactory.CreateUserFaker();
 
         var users = userFaker.Generate(_seedingOptions.Value.AmountOfUsers);
@@ -59,6 +61,8 @@ public class SeedingService : ISeedingService
 
     private async Task SeedPhotosForUserAsync(User user)
     {
+        await _photoCollection.DeleteManyAsync(FilterDefinition<Photo>.Empty);
+        
         var photoFaker = _fakerFactory.CreatePhotoFaker();
         
         var photos = photoFaker.Generate(_seedingOptions.Value.AmountOfPhotosPerUser);
@@ -69,6 +73,8 @@ public class SeedingService : ISeedingService
 
     private async Task SeedReviewsForUserAsync(User user)
     {
+        await _reviewCollection.DeleteManyAsync(FilterDefinition<Review>.Empty);
+        
         var reviewFaker = _fakerFactory.CreateReviewFaker();
         
         var reviews = reviewFaker.Generate(_seedingOptions.Value.AmountOfReviewsPerUser);
@@ -79,6 +85,12 @@ public class SeedingService : ISeedingService
 
     private async Task SeedRestaurantsAsync()
     {
+        await _restaurantCollection.DeleteManyAsync(FilterDefinition<Restaurant>.Empty);
+
+        await _restaurantCollection.Indexes.DropAllAsync();
+        await _restaurantCollection.Indexes.CreateOneAsync(new CreateIndexModel<Restaurant>(
+            Builders<Restaurant>.IndexKeys.Geo2DSphere(x => x.Location)));
+        
         var restaurantFaker = _fakerFactory.CreateRestaurantFaker();
 
         for (var i = 0; i < _seedingOptions.Value.AmountOfRestaurants; i++)

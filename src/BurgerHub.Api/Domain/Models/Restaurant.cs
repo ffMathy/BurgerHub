@@ -1,9 +1,11 @@
-﻿using MongoDB.Driver.GeoJsonObjectModel;
+﻿using MongoDB.Bson;
+using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace BurgerHub.Api.Domain.Models;
 
 public class Restaurant
 {
+    public ObjectId Id { get; set; }
     public string Name { get; set; } = null!;
     public GeoJsonPoint<GeoJson2DGeographicCoordinates> Location { get; set; } = null!;
     public OpeningTime[] OpeningTimes { get; set; } = null!;
@@ -12,6 +14,12 @@ public class Restaurant
 public class OpeningTime
 {
     public DayOfWeek DayOfWeek { get; set; }
-    public TimeOnly OpenTimeUtc { get; set; }
-    public TimeOnly CloseTimeUtc { get; set; }
+    public Time OpenTime { get; set; }
+    public Time CloseTime { get; set; }
+}
+
+public class Time
+{
+    public int Hour { get; set; }
+    public int Minute { get; set; }
 }
