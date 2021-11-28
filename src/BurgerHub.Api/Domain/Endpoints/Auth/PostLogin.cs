@@ -1,16 +1,12 @@
 ﻿using System.Security.Claims;
 using Ardalis.ApiEndpoints;
 using BurgerHub.Api.Domain.Models;
-using BurgerHub.Api.Domain.Queries;
 using BurgerHub.Api.Domain.Queries.Users;
 using BurgerHub.Api.Infrastructure.Security.Auth;
-using BurgerHub.Api.Infrastructure.Security.Encryption;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
-using MongoDB.Driver;
 
 namespace BurgerHub.Api.Domain.Endpoints.Auth;
 

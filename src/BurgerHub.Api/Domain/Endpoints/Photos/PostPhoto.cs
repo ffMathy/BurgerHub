@@ -1,14 +1,10 @@
-﻿using System.Web;
-using Ardalis.ApiEndpoints;
+﻿using Ardalis.ApiEndpoints;
 using BurgerHub.Api.Domain.Commands;
-using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Infrastructure.AspNet;
 using BurgerHub.Api.Infrastructure.Security.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace BurgerHub.Api.Domain.Endpoints.Photos;
 

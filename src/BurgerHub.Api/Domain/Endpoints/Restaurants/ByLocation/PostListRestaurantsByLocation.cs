@@ -35,6 +35,8 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
                 request.Limit,
                 request.Offset),
             cancellationToken);
+        
+        //TODO: split out mapping to automapper? https://github.com/ffMathy/BurgerHub/issues/7
         return MapRestaurantsToResponse(restaurants);
     }
 
