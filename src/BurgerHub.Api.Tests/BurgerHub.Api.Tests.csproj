@@ -19,4 +19,10 @@
       <ProjectReference Include="..\BurgerHub.Api\BurgerHub.Api.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Endpoints\Photos" />
+      <Folder Include="Endpoints\Restaurants\ByLocation" />
+      <Folder Include="Endpoints\Restaurants\Reviews" />
+    </ItemGroup>
+
 </Project>
