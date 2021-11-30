@@ -2,6 +2,6 @@
 
 public interface IEncryptionHelper
 {
-    Task<string> EncryptAsync(string plainText, bool withoutSalt = false);
+    Task<string> EncryptAsync(string plainText, bool withoutInitializationVector = false);
     Task<string> DecryptAsync(string cipherText);
 }

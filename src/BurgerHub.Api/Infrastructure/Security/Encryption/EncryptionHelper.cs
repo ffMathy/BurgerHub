@@ -16,14 +16,14 @@ public class EncryptionHelper : IEncryptionHelper
         _encryptionOptionsMonitor = encryptionOptionsMonitor;
     }
 
-    public async Task<string> EncryptAsync(string plainText, bool withoutSalt = false)
+    public async Task<string> EncryptAsync(string plainText, bool withoutInitializationVector = false)
     {
         var key = _encryptionOptionsMonitor.CurrentValue.Pepper;
         if (key == null)
             throw new InvalidOperationException("Could not find a pepper in the configuration of the application.");
 
         using var aes = GetAesAlgorithm(key);
-        aes.IV = withoutSalt ?
+        aes.IV = withoutInitializationVector ?
             GetEmptyInitializationVector(aes) :
             GenerateRandomInitializationVector(key);
 

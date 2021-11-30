@@ -51,8 +51,8 @@ public class AesEncryptionHelperTest
         var aesEncryptionHelper = new EncryptionHelper(fakeEncryptionOptionsMonitor);
 
         //Act
-        var data1 = await aesEncryptionHelper.EncryptAsync("some-data", withoutSalt: true);
-        var data2 = await aesEncryptionHelper.EncryptAsync("some-data", withoutSalt: true);
+        var data1 = await aesEncryptionHelper.EncryptAsync("some-data", withoutInitializationVector: true);
+        var data2 = await aesEncryptionHelper.EncryptAsync("some-data", withoutInitializationVector: true);
 
         //Assert
         Assert.AreEqual(

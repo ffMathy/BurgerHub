@@ -25,7 +25,7 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, U
     {
         var encryptedEmailAddress = await _encryptionHelper.EncryptAsync(
             request.Email,
-            withoutSalt: true);
+            withoutInitializationVector: true);
         return await _usersCollection
             .Find(x => x.EncryptedEmail == encryptedEmailAddress)
             .SingleOrDefaultAsync(cancellationToken);

@@ -105,7 +105,7 @@ public class SeedingService : ISeedingService
         user.HashedPassword = _passwordHasher.HashPassword(user, password);
         user.EncryptedEmail = await _encryptionHelper.EncryptAsync(
             email,
-            withoutSalt: true);
+            withoutInitializationVector: true);
     }
 
     private async Task SeedPhotosForUserAsync(User user)
