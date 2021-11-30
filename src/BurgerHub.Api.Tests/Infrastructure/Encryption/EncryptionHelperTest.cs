@@ -8,7 +8,7 @@ using NSubstitute;
 namespace BurgerHub.Api.Tests.Infrastructure.Encryption;
 
 [TestClass]
-public class AesEncryptionHelperTest
+public class EncryptionHelperTest
 {
     [TestMethod]
     [TestCategory(TestCategories.UnitCategory)]
