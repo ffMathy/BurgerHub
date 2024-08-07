@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using Serilog;
+using AutoMapper;
 
 namespace BurgerHub.Api.Infrastructure;
 
@@ -35,6 +36,7 @@ public class ApiIocRegistry
         RegisterMongo();
         RegisterSecurity();
         RegisterMediatR();
+        RegisterAutomapper();
     }
 
     private void RegisterMediatR()
@@ -44,6 +46,11 @@ public class ApiIocRegistry
         _serviceCollection.AddTransient(
             typeof(IPipelineBehavior<,>),
             typeof(LoggingBehavior<,>));
+    }
+
+    private void RegisterAutomapper()
+    {
+        _serviceCollection.AddAutoMapper(typeof(ApiIocRegistry).Assembly);
     }
 
     private void RegisterAspNet()

@@ -1,10 +1,10 @@
 ﻿using Ardalis.ApiEndpoints;
+using AutoMapper;
 using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Domain.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace BurgerHub.Api.Domain.Endpoints.Restaurants.ByLocation;
 
@@ -13,11 +13,14 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
     .WithResponse<PostListRestaurantsByLocationResponse>
 {
     private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
 
     public PostListRestaurantsByLocation(
-        IMediator mediator)
+        IMediator mediator,
+        IMapper mapper)
     {
         _mediator = mediator;
+        _mapper = mapper;
     }
 
     [AllowAnonymous]
@@ -26,54 +29,9 @@ public class PostListRestaurantsByLocation : BaseAsyncEndpoint
         [FromBody] PostListRestaurantsByLocationRequest request,
         CancellationToken cancellationToken = new())
     {
-        var restaurants = await _mediator.Send(
-            new GetNearbyRestaurantsQuery(
-                new LocationArguments(
-                    request.Location.Latitude,
-                    request.Location.Longitude),
-                request.RadiusInMeters,
-                request.Limit,
-                request.Offset),
-            cancellationToken);
-        
-        //TODO: split out mapping to automapper? https://github.com/ffMathy/BurgerHub/issues/7
-        return MapRestaurantsToResponse(restaurants);
-    }
-
-    private static PostListRestaurantsByLocationResponse MapRestaurantsToResponse(
-        IEnumerable<Restaurant> restaurants)
-    {
-        return new PostListRestaurantsByLocationResponse(restaurants
-            .Select(x => new RestaurantResponse(
-                x.Name,
-                x.Id.ToString(),
-                MapLocationToLocationResponse(x.Location),
-                x.DailyOpenTimes
-                    .Select(MapOpeningTimeToOpeningTimeResponse)
-                    .ToArray())));
-    }
-
-    private static LocationResponse MapLocationToLocationResponse(
-        GeoJsonPoint<GeoJson2DGeographicCoordinates> location)
-    {
-        return new LocationResponse(
-            location.Coordinates.Latitude,
-            location.Coordinates.Longitude);
-    }
-
-    private static DailyOpeningTimeResponse MapOpeningTimeToOpeningTimeResponse(
-        DailyOpeningTime dailyOpeningTime)
-    {
-        return new DailyOpeningTimeResponse(
-            dailyOpeningTime.DayOfWeek,
-            MapTimeToTimeResponse(dailyOpeningTime.OpenAt),
-            MapTimeToTimeResponse(dailyOpeningTime.ClosedAt));
-    }
-
-    private static TimeResponse MapTimeToTimeResponse(Time time)
-    {
-        return new TimeResponse(
-            time.Hour,
-            time.Minute);
+        var query = _mapper.Map<GetNearbyRestaurantsQuery>(request);
+        var restaurants = await _mediator.Send(query, cancellationToken);
+        var response = _mapper.Map<PostListRestaurantsByLocationResponse>(restaurants);
+        return response;
     }
 }

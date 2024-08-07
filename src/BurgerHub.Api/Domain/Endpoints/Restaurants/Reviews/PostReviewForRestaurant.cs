@@ -1,5 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using Ardalis.Result.AspNetCore;
+using AutoMapper;
 using BurgerHub.Api.Domain.Commands;
 using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Infrastructure.AspNet;
@@ -25,11 +26,14 @@ public class PostReviewForRestaurant : BaseAsyncEndpoint
     .WithResponse<Unit>
 {
     private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
 
     public PostReviewForRestaurant(
-        IMediator mediator)
+        IMediator mediator,
+        IMapper mapper)
     {
         _mediator = mediator;
+        _mapper = mapper;
     }
     
     //TODO: change route to POST api/restaurants/{restaurantId}/reviews, so restaurantId is inferred from route: https://github.com/ffMathy/BurgerHub/issues/6
@@ -43,15 +47,10 @@ public class PostReviewForRestaurant : BaseAsyncEndpoint
         if(!ObjectId.TryParse(request.RestaurantId, out var restaurantId))
             return BadRequest("Invalid restaurant ID.");
 
-        var result = await _mediator.Send(
-            new UpsertReviewCommand(
-                restaurantId,
-                User.GetRequiredId(),
-                new ReviewScoresArgument(
-                    request.Scores.Texture,
-                    request.Scores.Taste,
-                    request.Scores.Visual)),
-            cancellationToken);
+        var upsertReviewCommand = _mapper.Map<UpsertReviewCommand>(request);
+        upsertReviewCommand = upsertReviewCommand with { RestaurantId = restaurantId, AuthorUserId = User.GetRequiredId() };
+
+        var result = await _mediator.Send(upsertReviewCommand, cancellationToken);
         return this.ToActionResult(result);
     }
 }

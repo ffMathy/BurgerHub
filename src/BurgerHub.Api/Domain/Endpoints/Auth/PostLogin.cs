@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Ardalis.ApiEndpoints;
+using AutoMapper;
 using BurgerHub.Api.Domain.Models;
 using BurgerHub.Api.Domain.Queries.Users;
 using BurgerHub.Api.Infrastructure.Security.Auth;
@@ -23,15 +24,18 @@ public class PostLogin : BaseAsyncEndpoint
 {
     private readonly IJwtTokenFactory _jwtTokenFactory;
     private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
     
     private const string AuthenticationFailureMessage = "Invalid email or password";
 
     public PostLogin(
         IJwtTokenFactory jwtTokenFactory,
-        IMediator mediator)
+        IMediator mediator,
+        IMapper mapper)
     {
         _jwtTokenFactory = jwtTokenFactory;
         _mediator = mediator;
+        _mapper = mapper;
     }
     
     [AllowAnonymous]
@@ -40,13 +44,8 @@ public class PostLogin : BaseAsyncEndpoint
         PostLoginRequest request, 
         CancellationToken cancellationToken = new())
     {
-        var user = await _mediator.Send(
-            new GetUserByCredentialsQuery()
-            {
-                Email = request.Email,
-                Password = request.Password
-            },
-            cancellationToken);
+        var query = _mapper.Map<GetUserByCredentialsQuery>(request);
+        var user = await _mediator.Send(query, cancellationToken);
         if (user == null)
             return Unauthorized(AuthenticationFailureMessage);
         
