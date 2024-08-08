@@ -1,4 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
+using AutoMapper;
 using BurgerHub.Api.Domain.Commands;
 using BurgerHub.Api.Infrastructure.AspNet;
 using BurgerHub.Api.Infrastructure.Security.Auth;
@@ -16,11 +17,14 @@ public class PostPhoto : BaseAsyncEndpoint
     .WithoutResponse
 {
     private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
 
     public PostPhoto(
-        IMediator mediator)
+        IMediator mediator,
+        IMapper mapper)
     {
         _mediator = mediator;
+        _mapper = mapper;
     }
     
     [HttpPost("api/photos")]
@@ -36,12 +40,10 @@ public class PostPhoto : BaseAsyncEndpoint
         
         //TODO: upload memory stream to S3, or use pre-signed URLs
 
-        await _mediator.Send(
-            new UploadPhotoCommand(User.GetRequiredId())
-            {
-                Bytes = stream.ToArray()
-            },
-            cancellationToken);
+        var uploadPhotoCommand = _mapper.Map<UploadPhotoCommand>(request);
+        uploadPhotoCommand = uploadPhotoCommand with { AuthorUserId = User.GetRequiredId(), Bytes = stream.ToArray() };
+
+        await _mediator.Send(uploadPhotoCommand, cancellationToken);
 
         return Ok();
     }
